@@ -186,3 +186,8 @@ def predict_email(data: EmailRequest):
         "lime_values": lime_values,
         "theory": "Email detection checks suspicious words/links. LIME shows which words contributed to prediction."
     }
+
+@app.get("/")
+def home():
+    return FileResponse("index.html")
+    
