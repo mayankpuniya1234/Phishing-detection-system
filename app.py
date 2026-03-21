@@ -20,7 +20,7 @@ app.add_middleware(
 # ===============================
 # ✅ TRUSTED WEBSITES (NEW)
 # ===============================
-#trusted_sites = [
+"""trusted_sites = [
     "google.com",
     "youtube.com",
     "chatgpt.com",
@@ -41,7 +41,7 @@ app.add_middleware(
     "stackoverflow.com",
     "codeforces.com",
     "hackerrank.com"
-]
+]"""
 
 def is_trusted(url):
     domain = urlparse(url).netloc.lower()
