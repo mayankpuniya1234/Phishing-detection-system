@@ -5,7 +5,6 @@ from pydantic import BaseModel
 import joblib
 from lime.lime_text import LimeTextExplainer
 import numpy as np
-from urllib.parse import urlparse   # ✅ NEW
 
 app = FastAPI()
 
@@ -16,39 +15,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# ===============================
-# ✅ TRUSTED WEBSITES (NEW)
-# ===============================
-"""trusted_sites = [
-    "google.com",
-    "youtube.com",
-    "chatgpt.com",
-    "github.com",
-    "amazon.in",
-    "amazon.com",
-    "flipkart.com",
-    "microsoft.com",
-    "apple.com",
-    "facebook.com",
-    "instagram.com",
-    "twitter.com",
-    "linkedin.com",
-    "netflix.com",
-    "whatsapp.com",
-    "leetcode.com",
-    "geeksforgeeks.org",
-    "stackoverflow.com",
-    "codeforces.com",
-    "hackerrank.com"
-]"""
-
-def is_trusted(url):
-    domain = urlparse(url).netloc.lower()
-    for site in trusted_sites:
-        if domain == site or domain.endswith("." + site):
-            return True
-    return False
 
 # Load models
 model_website = joblib.load("xgb_phishing_model.pkl")
@@ -69,7 +35,6 @@ class EmailRequest(BaseModel):
 def scale_confidence(probs):
     return [round(float(p)*100,2) for p in probs]
 
-
 # simple URL analysis for dashboard
 def url_analysis(url):
     return {
@@ -81,26 +46,6 @@ def url_analysis(url):
 
 @app.post("/predict_website")
 def predict_website(data: URLRequest):
-
-    # ===============================
-    # ✅ WHITELIST CHECK (ONLY ADD)
-    # ===============================
-    if is_trusted(data.url):
-        return {
-            "prediction_label": "Safe",
-            "safe_probability": 99.99,
-            "phishing_probability": 0.01,
-            "confidence": 99.99,
-            "reason": "Trusted website (whitelisted)",
-            "lime_words": ["trusted", "safe"],
-            "lime_values": [-1, -0.8],
-            "url_analysis": url_analysis(data.url),
-            "theory": "Domain matched with trusted sites list."
-        }
-
-    # ===============================
-    # 🔽 YOUR ORIGINAL CODE (UNCHANGED)
-    # ===============================
 
     vec = vectorizer_website.transform([data.url])
 
@@ -140,7 +85,6 @@ def predict_website(data: URLRequest):
         "url_analysis": url_analysis(data.url),
         "theory": "Website detection checks URL patterns (length, HTTPS, IP, @ symbol, hyphens). LIME explains influential tokens."
     }
-
 
 @app.post("/predict_email")
 def predict_email(data: EmailRequest):
@@ -191,4 +135,3 @@ def predict_email(data: EmailRequest):
 @app.get("/")
 def home():
     return FileResponse("index.html")
-    
