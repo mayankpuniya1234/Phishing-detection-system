@@ -20,7 +20,7 @@ app.add_middleware(
 # ===============================
 # ✅ TRUSTED WEBSITES (NEW)
 # ===============================
-trusted_sites = [
+#trusted_sites = [
     "google.com",
     "youtube.com",
     "chatgpt.com",
